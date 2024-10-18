@@ -13,11 +13,12 @@ namespace MySpaceShooter
         public float boundaryMaxSize = 4.5f;
 
         public GameObject gameOverMessage;
+        private Rigidbody2D rb;
 
         // Start is called before the first frame update
         void Start()
         {
-
+            rb = GetComponent<Rigidbody2D>();
         }
 
         // Update is called once per frame
@@ -26,19 +27,22 @@ namespace MySpaceShooter
             float x = Input.GetAxis("Horizontal");
             float y = Input.GetAxis("Vertical");
 
-            transform.Translate(new Vector3(x, y) * Time.deltaTime * moveSpeed);
+            rb.MovePosition(rb.position + (new Vector2(x, y) * Time.deltaTime * moveSpeed));
+            //transform.Translate(new Vector3(x, y) * Time.deltaTime * moveSpeed);
 
-            if (transform.position.x > boundaryMaxSize)
-                transform.position = new Vector3(boundaryMaxSize, transform.position.y);
+            //if (transform.position.x > boundaryMaxSize)
+            //    transform.position = new Vector3(boundaryMaxSize, transform.position.y);
 
-            else if (transform.position.x < boundaryMinSize)
-                transform.position = new Vector3(boundaryMinSize, transform.position.y);
+            //else if (transform.position.x < boundaryMinSize)
+            //    transform.position = new Vector3(boundaryMinSize, transform.position.y);
 
-            if (transform.position.y > boundaryMaxSize)
-                transform.position = new Vector3(transform.position.x, boundaryMaxSize);
+            //if (transform.position.y > boundaryMaxSize)
+            //    transform.position = new Vector3(transform.position.x, boundaryMaxSize);
 
-            else if (transform.position.y < boundaryMinSize)
-                transform.position = new Vector3(transform.position.x, boundaryMinSize);
+            //else if (transform.position.y < boundaryMinSize)
+            //    transform.position = new Vector3(transform.position.x, boundaryMinSize);
+
+
         }
 
         private void OnTriggerEnter2D(Collider2D collision)

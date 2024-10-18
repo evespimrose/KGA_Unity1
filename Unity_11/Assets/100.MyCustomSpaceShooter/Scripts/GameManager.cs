@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -9,7 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     // 관리할 GameObject 리스트와 Sprite 리스트
-    public List<GameObject> gameObjects;
+    public List<Enemy> enemies;
     public List<Sprite> spriteList;
     public GameObject nebula;
     public List<Sprite> Nebulasprites;
@@ -27,6 +28,15 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        
+        foreach (Enemy enemy in enemies)
+        {
+            enemy.StartCoroutine(SpriteSetter(enemy));
         }
     }
 
@@ -69,37 +79,27 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        // gameObjects 리스트를 순회하면서 GameObject의 transform.position을 업데이트
-        foreach (GameObject obj in gameObjects)
+    }
+
+    private IEnumerator SpriteSetter(Enemy enemy)
+    {
+        while (true)
         {
-            Vector3 pos = obj.transform.position;
-
-            if (pos.y < -5.0f)
+            yield return new WaitUntil(() => enemy.isReborn);
+            print($"{enemy.name}의 SpriteSetter 발동");
+            enemy.isReborn = false;
+            Transform rendererTransform = enemy.transform.Find("Renderer");
+            if (rendererTransform != null)
             {
-                // y값을 10.0으로 재설정
-                pos.y = Random.Range(10.0f, 16.0f);
-                // x값을 0.5와 6.7 사이의 랜덤값으로 설정
-                pos.x = Random.Range(-4f, 4f);
-                obj.transform.position = pos;
-
-                // 자식 객체 중 "Renderer" 이름을 가진 객체를 찾아 SpriteRenderer 컴포넌트 교체
-                Transform rendererTransform = obj.transform.Find("Renderer");
-                if (rendererTransform != null)
+                SpriteRenderer spriteRenderer = rendererTransform.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null && spriteList.Count > 0)
                 {
-                    SpriteRenderer spriteRenderer = rendererTransform.GetComponent<SpriteRenderer>();
-                    if (spriteRenderer != null && spriteList.Count > 0)
-                    {
-                        // spriteList에서 랜덤 Sprite 설정
-                        spriteRenderer.sprite = spriteList[Random.Range(0, spriteList.Count)];
-                    }
-                }
-
-                Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
-                if (rb != null)
-                {
-                    rb.gravityScale = Random.Range(0.05f, 0.5f) * Time.deltaTime;
+                    // spriteList에서 랜덤 Sprite 설정
+                    spriteRenderer.sprite = spriteList[Random.Range(0, spriteList.Count)];
                 }
             }
         }
+
+        
     }
 }
